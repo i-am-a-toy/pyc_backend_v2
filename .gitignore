@@ -37,3 +37,6 @@ lerna-debug.log*
 # env
 .env.develop
 .env.production
+
+# sql
+sql/
