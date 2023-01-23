@@ -1,10 +1,11 @@
 import { DynamicModule } from '@nestjs/common';
 import { TypeOrmModule as OrmModule } from '@nestjs/typeorm';
+import * as path from 'path';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { TypeOrmDataSourceOptions } from './props/typeorm.props';
-import * as path from 'path';
 
 const entityPath = path.join(__dirname + './../../../entities/*/*.entity.js');
+const migrationPath = path.join(__dirname + './../../../migrations/*.js');
 
 export class TypeOrmModule {
   static forRoot(props: TypeOrmDataSourceOptions): DynamicModule {
@@ -18,6 +19,10 @@ export class TypeOrmModule {
       entities: [props.entityPath],
       logging: process.env.NODE_ENV === 'production' ? ['error'] : true,
       namingStrategy: new SnakeNamingStrategy(),
+      migrationsTableName: 'migrations',
+      migrationsRun: true,
+      migrations: [migrationPath],
+      migrationsTransactionMode: 'all',
       // connection pool option
       // https://github.com/typeorm/typeorm/issues/3388
       // https://node-postgres.com/api/pool
@@ -36,7 +41,7 @@ export const getTypeOrmModule = (): DynamicModule => {
     port: Number(process.env.DATABASE_PORT),
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
-    synchronize: process.env.NODE_ENV === 'production' ? false : true,
+    synchronize: false,
     entityPath,
   });
 };
