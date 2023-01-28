@@ -2,16 +2,15 @@ import { ForbiddenException, Inject, Injectable, Logger, NotFoundException, Unau
 import { hashSync } from 'bcrypt';
 import { IUserRepository } from 'src/entities/user/user-repository.interface';
 import { UserRepository } from 'src/entities/user/user.repository';
+import { ITokenService, TokenServiceKey } from '../../../core/token/interfaces/token-service.interface';
 import { IAuthService } from '../interfaces/auth-service.interface';
-import { ITokenService } from '../../../core/token/interfaces/token-service.interface';
-import { TokenService } from '../../../core/token/services/token.service';
 
 @Injectable()
 export class AuthService implements IAuthService {
   private readonly logger: Logger = new Logger(AuthService.name);
 
   constructor(
-    @Inject(TokenService) private readonly tokenService: ITokenService,
+    @Inject(TokenServiceKey) private readonly tokenService: ITokenService,
     @Inject(UserRepository) private readonly repository: IUserRepository,
   ) {}
 

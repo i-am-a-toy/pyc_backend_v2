@@ -6,6 +6,7 @@ import { AuthController } from './controllers/auth.controller';
 import { AuthServiceKey } from './interfaces/auth-service.interface';
 import { AuthService } from './services/auth.service';
 import { TokenService } from '../../core/token/services/token.service';
+import { TokenModule } from 'src/core/token/token.module';
 
 const authService: ClassProvider = {
   provide: AuthServiceKey,
@@ -13,8 +14,8 @@ const authService: ClassProvider = {
 };
 
 @Module({
-  imports: [getJwtModule(), RefreshTokenRepositoryModule, UserRepositoryModule],
-  providers: [TokenService, authService],
+  imports: [UserRepositoryModule, TokenModule],
+  providers: [authService],
   controllers: [AuthController],
 })
 export class AuthModule {}
