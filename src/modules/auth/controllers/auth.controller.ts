@@ -25,14 +25,12 @@ export class AuthController {
     return new TokenResponse(accessToken, refreshToken);
   }
 
-  //TODO: 추 후 Guard에서 인증을 거쳐야 함
   @Put('/refresh')
   async refresh(@Body() body: RefreshRequest): Promise<TokenResponse> {
     const [accessToken, refreshToken] = await this.service.refresh(body.accessToken, body.refreshToken);
     return new TokenResponse(accessToken, refreshToken);
   }
 
-  //TODO: 추 후 Guard에서 인증을 거쳐야 함
   @Put('/:id/password/change')
   async changePassword(@Param('id', ParseIntPipe) id: number, @Body() body: UpdatePasswordRequest): Promise<void> {
     await this.service.changePassword(id, body.prevPassword, body.newPassword);
