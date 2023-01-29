@@ -1,3 +1,4 @@
+import { Inject } from '@nestjs/common';
 import { EntityManager, EntityTarget, FindOneOptions, Repository } from 'typeorm';
 import { RootEntity } from '../generic/root.entity';
 import { TransactionManager } from './transaction-manager';
@@ -9,7 +10,7 @@ import { TransactionManager } from './transaction-manager';
  * 모든 Entity의 Repository는 해당 Repository를 구현하여 추가적인 CRUD method를 확장할 수 있다.
  */
 export abstract class GenericTypeOrmRepository<T extends RootEntity> {
-  constructor(private readonly txManger: TransactionManager) {}
+  constructor(@Inject(TransactionManager) private readonly txManger: TransactionManager) {}
 
   /**
    * getName

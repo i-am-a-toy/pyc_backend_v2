@@ -15,4 +15,8 @@ export class Role extends EnumType<Role>() {
   private constructor(readonly code: number, readonly role: string, readonly name: string) {
     super();
   }
+
+  isLeader(): boolean {
+    return this.code < Role.MEMBER.code;
+  }
 }

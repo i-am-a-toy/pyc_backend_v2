@@ -1,3 +1,7 @@
+import { compareSync } from 'bcrypt';
+import { Gender } from 'src/common/types/gender/gender.type';
+import { Rank } from 'src/common/types/rank/rank.type';
+import { Role } from 'src/common/types/role/role.type';
 import { BaseTimeEntity } from 'src/core/database/typeorm/base-time.entity';
 import { GenderTransformer, RankTransformer, RoleTransformer } from 'src/core/database/typeorm/transformer';
 import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne } from 'typeorm';
@@ -14,13 +18,13 @@ export class User extends BaseTimeEntity {
   cell: Cell | null;
 
   @Column({ type: 'varchar', nullable: false, transformer: new RoleTransformer() })
-  role!: string;
+  role!: Role;
 
   @Column({ type: 'varchar', nullable: false, transformer: new GenderTransformer() })
-  gender!: string;
+  gender!: Gender;
 
   @Column({ type: 'varchar', nullable: false, transformer: new RankTransformer() })
-  rank!: string;
+  rank!: Rank;
 
   @Column({ type: 'varchar', nullable: false, unique: true })
   name!: string;
@@ -42,4 +46,12 @@ export class User extends BaseTimeEntity {
 
   @DeleteDateColumn({ type: 'timestamptz', nullable: true })
   deletedAt: Date | null;
+
+  isValidPassword(password: string): boolean {
+    return compareSync(password, this.password!);
+  }
+
+  updatePassword(password: string): void {
+    this.password = password;
+  }
 }

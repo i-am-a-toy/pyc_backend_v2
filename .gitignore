@@ -40,3 +40,6 @@ lerna-debug.log*
 
 # sql
 sql/
+
+# IDE
+.vscode/
