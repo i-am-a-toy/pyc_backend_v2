@@ -1,4 +1,4 @@
-import { BadRequestException, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { PycUser } from 'src/common/dto/context/pyc-user.dto';
@@ -74,7 +74,7 @@ describe('AuthorizationGuard', () => {
 
     //when
     //then
-    await expect(guard.canActivate(context)).rejects.toThrowError(new BadRequestException('인증정보가 없습니다.'));
+    await expect(guard.canActivate(context)).rejects.toThrowError(new UnauthorizedException('인증정보가 없습니다.'));
   });
 
   it('Authorization Guard - Token 형식이 옯바르지 않는 경우', async () => {
@@ -96,7 +96,7 @@ describe('AuthorizationGuard', () => {
 
     //when
     //then
-    await expect(guard.canActivate(context)).rejects.toThrowError(new BadRequestException('인증정보가 형식이 옳바르지 않습니다'));
+    await expect(guard.canActivate(context)).rejects.toThrowError(new UnauthorizedException('인증정보가 형식이 옳바르지 않습니다'));
   });
 
   it('Authorization Guard - 토큰이 유효하지 않는 경우', async () => {
@@ -120,7 +120,7 @@ describe('AuthorizationGuard', () => {
 
     //when
     //then
-    await expect(guard.canActivate(context)).rejects.toThrowError(new UnauthorizedException('유효하지 않은 접근입니다.'));
+    await expect(guard.canActivate(context)).rejects.toThrowError(new UnauthorizedException('인증 정보가 유효하지 않습니다.'));
   });
 
   it('Authorization Guard - Role이 유효하지 않은 경우', async () => {
@@ -144,7 +144,7 @@ describe('AuthorizationGuard', () => {
 
     //when
     //then
-    await expect(guard.canActivate(context)).rejects.toThrowError(new BadRequestException('유효하지 않은 Role입니다.'));
+    await expect(guard.canActivate(context)).rejects.toThrowError(new UnauthorizedException('유효하지 않은 Role입니다.'));
   });
 
   it('Authorization Guard - Role이 유효하지 않은 경우2 (Member일 때)', async () => {
@@ -168,7 +168,7 @@ describe('AuthorizationGuard', () => {
 
     //when
     //then
-    await expect(guard.canActivate(context)).rejects.toThrowError(new BadRequestException('유효하지 않은 Role입니다.'));
+    await expect(guard.canActivate(context)).rejects.toThrowError(new UnauthorizedException('유효하지 않은 Role입니다.'));
   });
 
   it('Authorization Guard', async () => {
