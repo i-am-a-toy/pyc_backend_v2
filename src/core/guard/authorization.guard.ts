@@ -13,7 +13,7 @@ export class AuthorizationGuard implements CanActivate {
     '/auth/login',
     '/auth/logout',
     '/auth/refresh',
-    //  '/auth/token/validate'
+    '/auth/token/validate'
   ];
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
