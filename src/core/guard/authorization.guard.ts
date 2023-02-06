@@ -9,12 +9,7 @@ export class AuthorizationGuard implements CanActivate {
   constructor(@Inject(TokenServiceKey) private readonly tokenService: ITokenService) {}
 
   //1. write WHITELIST
-  private readonly WHITELIST = [
-    '/auth/login',
-    '/auth/logout',
-    '/auth/refresh',
-    '/auth/token/validate'
-  ];
+  private readonly WHITELIST = ['/auth/login', '/auth/logout', '/auth/refresh'];
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest<Request>();
@@ -29,7 +24,6 @@ export class AuthorizationGuard implements CanActivate {
 
     const headerArray = authorizationHeader.split(' ');
     if (headerArray.length != 2) throw new UnauthorizedException('인증정보가 형식이 옳바르지 않습니다');
-
     try {
       const [_, token] = headerArray;
       const accessClaim = this.tokenService.verifiedToken(token);
