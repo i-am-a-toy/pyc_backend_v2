@@ -1,7 +1,6 @@
 import { ForbiddenException, Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { hashSync } from 'bcrypt';
-import { IUserRepository } from 'src/entities/user/user-repository.interface';
-import { UserRepository } from 'src/entities/user/user.repository';
+import { IUserRepository, UserRepositoryKey } from 'src/entities/user/user-repository.interface';
 import { ITokenService, TokenServiceKey } from '../../../core/token/interfaces/token-service.interface';
 import { IAuthService } from '../interfaces/auth-service.interface';
 
@@ -11,7 +10,7 @@ export class AuthService implements IAuthService {
 
   constructor(
     @Inject(TokenServiceKey) private readonly tokenService: ITokenService,
-    @Inject(UserRepository) private readonly repository: IUserRepository,
+    @Inject(UserRepositoryKey) private readonly repository: IUserRepository,
   ) {}
 
   /**
