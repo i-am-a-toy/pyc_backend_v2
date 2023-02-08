@@ -8,6 +8,7 @@ import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne } from 'typeorm
 import { Cell } from '../cell/cell.entity';
 import { AddressVO } from '../vo/address.vo';
 
+// TODO: 유저 이미지 및 연락처 마이그레이션
 @Entity({ name: 'users' })
 export class User extends BaseTimeEntity {
   @Column({ name: 'cell_id', nullable: true, type: 'integer', comment: '사용자가 속한 셀 ID' })
