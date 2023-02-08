@@ -1,5 +1,6 @@
 import { Controller, Get, Inject } from '@nestjs/common';
 import { PycUser } from 'src/common/dto/context/pyc-user.dto';
+import { UserResponse } from 'src/common/responses/user/user.response';
 import { PycContext } from 'src/core/decorator/pyc-context.decorator';
 import { IUserService, UserServiceKey } from '../interfaces/user-service.interface';
 
@@ -7,9 +8,9 @@ import { IUserService, UserServiceKey } from '../interfaces/user-service.interfa
 export class UserController {
   constructor(@Inject(UserServiceKey) private readonly service: IUserService) {}
 
-  @Get('/:id')
-  findUserById(@PycContext() pycUser: PycUser) {
-    // TODO: UserResponse 정의 후 Return
-    const user = this.service.findById(pycUser.userId);
+  @Get('/me')
+  async findUserById(@PycContext() pycUser: PycUser): Promise<UserResponse> {
+    const user = await this.service.findById(pycUser.userId);
+    return new UserResponse(user);
   }
 }
