@@ -91,7 +91,7 @@ describe('UserService Test', () => {
 
     //when
     //then
-    expect(
+    await expect(
       namespace.runPromise(async () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.findById(id);

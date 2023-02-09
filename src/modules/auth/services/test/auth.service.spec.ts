@@ -141,14 +141,14 @@ describe('AuthService Test', () => {
     expect(result).toBe(true);
   });
 
-  it('login - user가 존재하지 않는 경우', () => {
+  it('login - user가 존재하지 않는 경우', async () => {
     //given
     const name = 'foobar';
     const password = 'test';
 
     //when
     //then
-    expect(
+    await expect(
       namespace.runPromise(async () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.login(name, password);
@@ -162,7 +162,7 @@ describe('AuthService Test', () => {
 
     //when
     //then
-    expect(
+    await expect(
       namespace.runPromise(async () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.login(memberUserB.name, 'test');
@@ -176,7 +176,7 @@ describe('AuthService Test', () => {
 
     //when
     //then
-    expect(
+    await expect(
       namespace.runPromise(async () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.login(leaderUserA.name, 'difference');
@@ -197,7 +197,7 @@ describe('AuthService Test', () => {
     expect(tokens.length).toBe(2);
   });
 
-  it('changePassword - user가 존재하지 않는 경우', () => {
+  it('changePassword - user가 존재하지 않는 경우', async () => {
     //given
     const id = 1;
     const prevPassword = 'foobar';
@@ -205,7 +205,7 @@ describe('AuthService Test', () => {
 
     //when
     //then
-    expect(
+    await expect(
       namespace.runPromise(async () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.changePassword(id, prevPassword, newPassword);
@@ -221,7 +221,7 @@ describe('AuthService Test', () => {
 
     //when
     //then
-    expect(
+    await expect(
       namespace.runPromise(async () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.changePassword(memberUserB.id, prevPassword, newPassword);
@@ -237,7 +237,7 @@ describe('AuthService Test', () => {
 
     //when
     //then
-    expect(
+    await expect(
       namespace.runPromise(async () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.changePassword(leaderUserA.id, prevPassword, newPassword);
