@@ -8,7 +8,6 @@ import { Column, DeleteDateColumn, Entity, JoinColumn, ManyToOne } from 'typeorm
 import { Cell } from '../cell/cell.entity';
 import { AddressVO } from '../vo/address.vo';
 
-// TODO: 유저 이미지 및 연락처 마이그레이션
 @Entity({ name: 'users' })
 export class User extends BaseTimeEntity {
   @Column({ name: 'cell_id', nullable: true, type: 'integer', comment: '사용자가 속한 셀 ID' })
@@ -39,8 +38,14 @@ export class User extends BaseTimeEntity {
   @Column({ type: 'timestamptz', nullable: true })
   birth: Date | null;
 
+  @Column({ type: 'varchar', nullable: true })
+  contact: string | null;
+
   @Column(() => AddressVO, { prefix: false })
   address: AddressVO;
+
+  @Column({ type: 'varchar', nullable: false })
+  image: string;
 
   @Column({ type: 'boolean', nullable: false })
   isLongAbsence!: boolean;

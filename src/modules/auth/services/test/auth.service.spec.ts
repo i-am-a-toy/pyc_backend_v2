@@ -26,6 +26,7 @@ const mockUsers: User[] = [
     gender: Gender.MALE,
     rank: Rank.INFANT_BAPTISM,
     name: 'userA',
+    image: 'imageA',
     isLongAbsence: false,
     password: hashSync('test', 10),
   }),
@@ -34,6 +35,7 @@ const mockUsers: User[] = [
     gender: Gender.MALE,
     rank: Rank.INFANT_BAPTISM,
     name: 'userB',
+    image: 'imageB',
     isLongAbsence: false,
   }),
 ];
