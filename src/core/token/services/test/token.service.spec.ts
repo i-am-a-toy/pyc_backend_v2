@@ -28,6 +28,7 @@ const mockUsers: User[] = [
     gender: Gender.MALE,
     rank: Rank.INFANT_BAPTISM,
     name: 'userA',
+    image: 'imageA',
     isLongAbsence: false,
   }),
 ];

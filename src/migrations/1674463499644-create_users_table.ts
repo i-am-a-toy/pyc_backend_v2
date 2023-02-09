@@ -21,6 +21,7 @@ export class createUsersTable1674463499644 implements MigrationInterface {
       contact             VARCHAR                 NULL,
       zip_code            VARCHAR(10)             NULL,
       address             VARCHAR                 NULL,
+      image               VARCHAR                 NOT NULL, 
       is_long_absence     BOOLEAN                 NOT NULL,
       created_at          TIMESTAMPTZ             NOT NULL        DEFAULT now(),
       last_modified_at    TIMESTAMPTZ             NOT NULL        DEFAULT now(),
@@ -41,6 +42,7 @@ export class createUsersTable1674463499644 implements MigrationInterface {
     await queryRunner.query(`COMMENT ON COLUMN users.contact IS 'COLUMN 연락처';`);
     await queryRunner.query(`COMMENT ON COLUMN users.zip_code IS 'COLUMN 우편 번호';`);
     await queryRunner.query(`COMMENT ON COLUMN users.address IS 'COLUMN 상세 주소';`);
+    await queryRunner.query(`COMMENT ON COLUMN users.image IS 'COLUMN 유저 프로필 이미지 URL';`);
     await queryRunner.query(`COMMENT ON COLUMN users.is_long_absence IS 'COLUMN 장기 결석 여부';`);
     await queryRunner.query(`COMMENT ON COLUMN users.created_at IS 'COLUMN 생성일';`);
     await queryRunner.query(`COMMENT ON COLUMN users.last_modified_at IS 'COLUMN 수정일';`);

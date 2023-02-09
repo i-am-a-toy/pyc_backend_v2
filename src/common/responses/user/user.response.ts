@@ -9,8 +9,10 @@ export class UserResponse {
   readonly name: string;
   readonly age: number | null;
   readonly birth: Date | null;
+  readonly contact: string | null;
   readonly zipCode: string | null;
   readonly address: string | null;
+  readonly image: string;
   readonly isLongAbsence: boolean;
 
   constructor(user: User) {
@@ -21,8 +23,10 @@ export class UserResponse {
     this.rank = user.rank.name;
     this.age = user.age;
     this.birth = user.birth;
+    this.contact = user.contact;
     this.zipCode = user.address.zipCode;
     this.address = user.address.address;
+    this.image = user.image;
     this.isLongAbsence = user.isLongAbsence;
   }
 }
