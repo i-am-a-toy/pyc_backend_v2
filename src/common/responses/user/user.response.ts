@@ -21,6 +21,7 @@ export class UserResponse {
     this.role = user.role.name;
     this.gender = user.gender.name;
     this.rank = user.rank.name;
+    this.name = user.name;
     this.age = user.age;
     this.birth = user.birth;
     this.contact = user.contact;
