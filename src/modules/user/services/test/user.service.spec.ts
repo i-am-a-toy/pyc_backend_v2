@@ -121,4 +121,67 @@ describe('UserService Test', () => {
     expect(result.isLongAbsence).toBe(false);
     expect(compareSync('test', result.password!)).toBe(true);
   });
+
+  it('search - 검색결과가 존재하지 않는 경우', async () => {
+    //given
+    const q = 'foobar';
+    const offset = 0;
+    const limit = 20;
+
+    //when
+    const result = await namespace.runAndReturn<Promise<[User[], number]>>(async () => {
+      namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+      return service.search(q, offset, limit);
+    });
+
+    //then
+    expect(result).toStrictEqual([[], 0]);
+  });
+
+  it('search - 유저이름 전체로 검색', async () => {
+    //given
+    await dataSource.manager.save(User, mockUsers);
+
+    const q = 'userA';
+    const offset = 0;
+    const limit = 20;
+
+    //when
+    const result = await namespace.runAndReturn<Promise<[User[], number]>>(async () => {
+      namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+      return service.search(q, offset, limit);
+    });
+
+    //then
+    const [rows, count] = result;
+    expect(count).toBe(1);
+    expect(rows.length).toBe(1);
+
+    const [resultUserA] = rows;
+    expect(resultUserA.name).toBe('userA');
+  });
+
+  it('search - 유저이름 부분으로 검색', async () => {
+    //given
+    await dataSource.manager.save(User, mockUsers);
+
+    const q = 'user';
+    const offset = 0;
+    const limit = 20;
+
+    //when
+    const result = await namespace.runAndReturn<Promise<[User[], number]>>(async () => {
+      namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+      return service.search(q, offset, limit);
+    });
+
+    //then
+    const [rows, count] = result;
+    expect(count).toBe(2);
+    expect(rows.length).toBe(2);
+
+    const [resultUserA, resultUserB] = rows;
+    expect(resultUserA.name).toBe('userA');
+    expect(resultUserB.name).toBe('userB');
+  });
 });
