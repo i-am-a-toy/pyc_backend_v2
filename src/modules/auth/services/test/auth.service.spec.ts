@@ -65,7 +65,6 @@ describe('AuthService Test', () => {
       password: container.getPassword(),
       synchronize: true,
       entities: [Cell, User, RefreshToken],
-      logging: true,
     }).initialize();
 
     jwtService = new JwtService({
