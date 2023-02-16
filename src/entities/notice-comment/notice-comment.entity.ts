@@ -31,4 +31,9 @@ export class NoticeComment extends BaseTimeEntity {
     e.lastModifier = new LastModifierVO(userId, userName, userRole);
     return e;
   }
+
+  update(comment: string, userId: number, userName: string, userRole: Role) {
+    this.content = comment;
+    this.lastModifier = new LastModifierVO(userId, userName, userRole);
+  }
 }
