@@ -16,4 +16,8 @@ export class UserService implements IUserService {
     }
     return user;
   }
+
+  search(q: string, offset: number, limit: number): Promise<[User[], number]> {
+    return this.repository.search(q, offset, limit);
+  }
 }
