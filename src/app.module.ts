@@ -3,9 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CoreModule } from './core/code.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { NoticeModule } from './modules/notice/notice.module';
 import { UserModule } from './modules/user/user.module';
 
-const applicationModule = [AuthModule, UserModule];
+const applicationModule = [AuthModule, UserModule, NoticeModule];
 
 @Module({
   imports: [CoreModule, ...applicationModule],
