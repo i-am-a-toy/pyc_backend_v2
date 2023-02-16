@@ -10,7 +10,7 @@ import { NoticeRepository } from 'src/entities/notice/notice.repository';
 import { CreatorVO } from 'src/entities/vo/creator.vo';
 import { LastModifierVO } from 'src/entities/vo/last-modifier.vo';
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from 'testcontainers';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, EntityNotFoundError } from 'typeorm';
 import { INoticeService } from '../../interfaces/notice-service.interface';
 import { NoticeService } from '../notice.service';
 
@@ -130,5 +130,127 @@ describe('NoticeService Test', () => {
     expect(notice.content).toBe('contentA');
     expect(notice.creator).toStrictEqual(new CreatorVO(1, 'userA', Role.LEADER));
     expect(notice.lastModifier).toStrictEqual(new LastModifierVO(1, 'userA', Role.LEADER));
+  });
+
+  it('FindNotices 조회 결과가 없는 경우', async () => {
+    //given
+    const offset = 0;
+    const limit = 20;
+
+    //when
+    const [entities, count] = await namespace.runAndReturn<Promise<[Notice[], number]>>(async () => {
+      namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+      return service.findNotices(offset, limit);
+    });
+
+    //then
+    expect(entities).toStrictEqual([]);
+    expect(count).toBe(0);
+  });
+
+  it('FindNotices - with limit', async () => {
+    //given
+    await dataSource.manager.save(Notice, mockNotices);
+
+    const offset = 0;
+    const limit = 1;
+
+    //when
+    const [entities, count] = await namespace.runAndReturn<Promise<[Notice[], number]>>(async () => {
+      namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+      return service.findNotices(offset, limit);
+    });
+
+    //then
+    const [noticeA] = entities;
+    expect(noticeA.title).toBe('noticeA');
+    expect(count).toBe(2);
+  });
+
+  it('FindNotices - with offset', async () => {
+    //given
+    await dataSource.manager.save(Notice, mockNotices);
+
+    const offset = 1;
+    const limit = 20;
+
+    //when
+    const [entities, count] = await namespace.runAndReturn<Promise<[Notice[], number]>>(async () => {
+      namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+      return service.findNotices(offset, limit);
+    });
+
+    //then
+    const [noticeB] = entities;
+    expect(noticeB.title).toBe('noticeB');
+    expect(count).toBe(2);
+  });
+
+  it('modify - 존재하지 않는 경우', async () => {
+    //given
+    const pycUser: PycUser = { id: 'userId', userId: 1, name: 'userA', role: Role.LEADER };
+    const targetId = 1;
+    const title = 'change';
+    const content = 'change';
+
+    //when
+    //then
+    await expect(
+      namespace.runPromise(async () => {
+        namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+        await service.modify(pycUser, targetId, title, content);
+      }),
+    ).rejects.toThrowError(new NotFoundException('공지사항을 찾을 수 없습니다.'));
+  });
+
+  it('modify', async () => {
+    //given
+    const [noticeA] = await dataSource.manager.save(Notice, mockNotices);
+    const modifier: PycUser = { id: 'userId', userId: 2, name: 'userB', role: Role.PASTOR };
+    const title = 'change';
+    const content = 'change';
+
+    //when
+    await namespace.runPromise(async () => {
+      namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+      await service.modify(modifier, noticeA.id, title, content);
+    });
+
+    //then
+    const updatedNoticeA = await dataSource.manager.findOneByOrFail(Notice, { id: noticeA.id });
+    expect(updatedNoticeA.id).toBe(1);
+    expect(updatedNoticeA.title).toBe('change');
+    expect(updatedNoticeA.content).toBe('change');
+    expect(updatedNoticeA.lastModifier).toStrictEqual(new LastModifierVO(2, 'userB', Role.PASTOR));
+  });
+
+  it('deleteById - 존재하지 않는 경우', async () => {
+    //given
+    const id = 1;
+
+    //when
+    //then
+    await expect(
+      namespace.runPromise(async () => {
+        namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+        await service.deleteById(id);
+      }),
+    ).resolves.not.toThrowError();
+  });
+
+  it('deleteById', async () => {
+    //given
+    const [noticeA] = await dataSource.manager.save(Notice, mockNotices);
+
+    //when
+    await namespace.runPromise(async () => {
+      namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+      await service.deleteById(noticeA.id);
+    });
+
+    //then
+    await expect(dataSource.manager.findOneByOrFail(Notice, { id: noticeA.id })).rejects.toThrowError(
+      new EntityNotFoundError(Notice, { id: 1 }),
+    );
   });
 });
