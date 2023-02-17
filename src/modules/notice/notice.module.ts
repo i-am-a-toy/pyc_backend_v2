@@ -1,6 +1,7 @@
 import { ClassProvider, Module } from '@nestjs/common';
 import { NoticeCommentRepositoryModule } from 'src/entities/notice-comment/notice-comment-repository.module';
 import { NoticeRepositoryModule } from 'src/entities/notice/notice-repository.module';
+import { NoticeCommentController } from './controllers/notice-comment.controller';
 import { NoticeController } from './controllers/notice.controller';
 import { NoticeCommentServiceKey } from './interfaces/notice-comment-service.interface';
 import { NoticeServiceKey } from './interfaces/notice-service.interface';
@@ -21,6 +22,6 @@ const noticeCommentService: ClassProvider = {
   imports: [NoticeRepositoryModule, NoticeCommentRepositoryModule],
   providers: [noticeService, noticeCommentService],
   exports: [noticeService, noticeCommentService],
-  controllers: [NoticeController],
+  controllers: [NoticeController, NoticeCommentController],
 })
 export class NoticeModule {}
