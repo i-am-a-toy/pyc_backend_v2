@@ -1,5 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { EntityManager, EntityTarget, FindOneOptions, Repository } from 'typeorm';
+import { GenericRepository } from '../generic/generic.repository';
 import { RootEntity } from '../generic/root.entity';
 import { TransactionManager } from './transaction-manager';
 
@@ -9,7 +10,7 @@ import { TransactionManager } from './transaction-manager';
  * @description ORM을 이용하여 공통적으로 사용하는 Save, FindById, Remove를 구현한 Abstract Class
  * 모든 Entity의 Repository는 해당 Repository를 구현하여 추가적인 CRUD method를 확장할 수 있다.
  */
-export abstract class GenericTypeOrmRepository<T extends RootEntity> {
+export abstract class GenericTypeOrmRepository<T extends RootEntity> implements GenericRepository<T> {
   constructor(@Inject(TransactionManager) private readonly txManger: TransactionManager) {}
 
   /**
@@ -21,8 +22,8 @@ export abstract class GenericTypeOrmRepository<T extends RootEntity> {
    */
   abstract getName(): EntityTarget<T>;
 
-  async save(t: T | T[]): Promise<void> {
-    await this.getRepository().save(Array.isArray(t) ? t : [t]);
+  async save(t: T | T[]): Promise<T[]> {
+    return this.getRepository().save(Array.isArray(t) ? t : [t]);
   }
 
   async findById(id: number): Promise<T | null> {
