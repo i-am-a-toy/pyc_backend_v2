@@ -281,4 +281,18 @@ describe('NoticeComment Service', () => {
       new EntityNotFoundError(NoticeComment, { id: 1 }),
     );
   });
+
+  it('deleteById - 댓글까지 동시에 삭제', async () => {
+    //given
+    const [noticeA] = await dataSource.manager.save(Notice, mockNotices);
+    const [commentA] = await dataSource.manager.save(NoticeComment, [NoticeComment.of(noticeA, 'commentA', 1, 'userA', Role.LEADER)]);
+
+    //when
+    await dataSource.manager.remove(noticeA);
+
+    //then
+    expect(dataSource.manager.findOneByOrFail(NoticeComment, { id: commentA.id })).rejects.toThrowError(
+      new EntityNotFoundError(NoticeComment, { id: 1 }),
+    );
+  });
 });

@@ -10,7 +10,7 @@ export class NoticeComment extends BaseTimeEntity {
   @Column({ name: 'notice_id', type: 'bigint', nullable: false })
   noticeId: number;
 
-  @ManyToOne(() => Notice, { nullable: false, cascade: ['remove'] })
+  @ManyToOne(() => Notice, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'notice_id', referencedColumnName: 'id' })
   notice: Notice;
 
