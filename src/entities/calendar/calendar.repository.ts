@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { getMonthLastDay, getPrevMonthLastDay } from 'src/common/utils/date';
+import { getMonthFirstDay, getPrevMonthLastDay } from 'src/common/utils/date';
 import { GenericTypeOrmRepository } from 'src/core/database/typeorm/generic-typeorm.repository';
 import { EntityTarget } from 'typeorm';
 import { ICalendarRepository } from './calendar-repository.interface';
@@ -18,17 +18,16 @@ export class CalendarRepository extends GenericTypeOrmRepository<Calendar> imple
   ): Promise<[Calendar[], number]> {
     const date = new Date(`${year}-${month}-1`);
     const first = getPrevMonthLastDay(date);
-    const last = getMonthLastDay(date);
+    const last = getMonthFirstDay(new Date(date.setMonth(date.getMonth() + 1)));
 
     return this.getRepository()
       .createQueryBuilder('calendar')
       .orWhere(
         `
-        ("calendar"."start" >= :first AND "calendar"."end" <= :last) OR -- 월 안에 있는
-        ("calendar"."start" <= :first AND :last <= "calendar"."end") OR -- start end 둘다 월 밖에 있을 경우
-        ("calendar"."start" <= :first AND ("calendar"."end" >= :first AND "calendar"."end" <= :last)) OR -- start는 월 밖에 end는 월 안에
-        (("calendar"."start" >= :first AND "calendar"."start" <= :last) AND :last <= "calendar"."end") -- start는 월 안에 end는 월 밖에
-      )`,
+          ("calendar"."start" >= :first AND "calendar"."end" <= :last) OR
+          ("calendar"."start" <= :first AND :last <= "calendar"."end") OR
+          ("calendar"."start" <= :first AND ("calendar"."end" >= :first AND "calendar"."end" <= :last)) OR
+          (("calendar"."start" >= :first AND "calendar"."start" <= :last) AND :last <= "calendar"."end")`,
         { first, last },
       )
       .orderBy('calendar.start', 'ASC')
