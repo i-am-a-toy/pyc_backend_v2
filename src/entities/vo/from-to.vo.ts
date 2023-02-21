@@ -7,7 +7,7 @@ export class FromToVO {
   @Column({ type: 'timestamptz', nullable: false })
   end!: Date;
 
-  @Column({ type: 'boolean', nullable: false, default: true })
+  @Column({ name: 'is_all_day', type: 'boolean', nullable: false, default: true })
   isAllDay!: boolean;
 
   constructor(start: Date, end: Date, isAllDay: boolean) {
