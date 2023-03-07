@@ -11,7 +11,7 @@ export class NoticeRepository extends GenericTypeOrmRepository<Notice> implement
   }
 
   findAll(offset: number, limit: number): Promise<[Notice[], number]> {
-    return this.getRepository().findAndCount({ skip: offset, take: limit });
+    return this.getRepository().findAndCount({ skip: offset, take: limit, order: { createdAt: 'DESC' } });
   }
 
   async deleteById(id: number): Promise<void> {
