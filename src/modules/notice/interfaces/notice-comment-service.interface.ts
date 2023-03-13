@@ -9,7 +9,7 @@ export interface INoticeCommentService {
 
   //R
   findByNoticeId(noticeId: number, offset: number, limit: number): Promise<[NoticeComment[], number]>;
-  findById(id: number): Promise<NoticeComment>;
+  findCommentById(id: number): Promise<NoticeComment>;
 
   //U
   modify(pycUser: PycUser, id: number, comment: string): Promise<NoticeComment>;

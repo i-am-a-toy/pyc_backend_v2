@@ -2,6 +2,8 @@ import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PycUser } from 'src/common/dto/context/pyc-user.dto';
 import { INoticeRepository, NoticeRepositoryKey } from 'src/entities/notice/notice-repository.interface';
 import { Notice } from 'src/entities/notice/notice.entity';
+import { ENTITY_NOT_FOUND } from '../../../common/dto/error/error-code.dto';
+import { ServiceException } from '../../../core/exception/service.exception';
 import { INoticeService } from '../interfaces/notice-service.interface';
 
 @Injectable()
@@ -71,7 +73,7 @@ export class NoticeService implements INoticeService {
     const notice = await this.repository.findById(id);
     if (!notice) {
       this.logger.warn(`Could not find Notice By Id: ${id}`);
-      throw new NotFoundException('공지사항을 찾을 수 없습니다.');
+      throw new ServiceException(ENTITY_NOT_FOUND, '공지사항을 찾을 수 없습니다.');
     }
     return notice;
   }

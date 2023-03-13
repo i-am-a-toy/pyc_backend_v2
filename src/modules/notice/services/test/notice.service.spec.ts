@@ -11,6 +11,8 @@ import { CreatorVO } from 'src/entities/vo/creator.vo';
 import { LastModifierVO } from 'src/entities/vo/last-modifier.vo';
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from 'testcontainers';
 import { DataSource, EntityManager, EntityNotFoundError } from 'typeorm';
+import { ENTITY_NOT_FOUND } from '../../../../common/dto/error/error-code.dto';
+import { ServiceException } from '../../../../core/exception/service.exception';
 import { INoticeService } from '../../interfaces/notice-service.interface';
 import { NoticeService } from '../notice.service';
 
@@ -111,7 +113,7 @@ describe('NoticeService Test', () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.findNoticeById(id);
       }),
-    ).rejects.toThrowError(new NotFoundException('공지사항을 찾을 수 없습니다.'));
+    ).rejects.toThrowError(new ServiceException(ENTITY_NOT_FOUND, '공지사항을 찾을 수 없습니다.'));
   });
 
   it('FindNoticeById', async () => {
@@ -200,7 +202,7 @@ describe('NoticeService Test', () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.modify(pycUser, targetId, title, content);
       }),
-    ).rejects.toThrowError(new NotFoundException('공지사항을 찾을 수 없습니다.'));
+    ).rejects.toThrowError(new ServiceException(ENTITY_NOT_FOUND, '공지사항을 찾을 수 없습니다.'));
   });
 
   it('modify', async () => {
