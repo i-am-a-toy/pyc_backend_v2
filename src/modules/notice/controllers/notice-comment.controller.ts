@@ -23,7 +23,7 @@ export class NoticeCommentController {
 
   @Get('/:id')
   async findComment(@Param('id', ParseIntPipe) id: number): Promise<NoticeCommentResponse> {
-    const comment = await this.service.findById(id);
+    const comment = await this.service.findCommentById(id);
     return new NoticeCommentResponse(comment);
   }
 
