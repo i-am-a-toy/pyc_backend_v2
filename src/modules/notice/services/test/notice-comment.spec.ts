@@ -1,4 +1,3 @@
-import { NotFoundException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { createNamespace, destroyNamespace, Namespace } from 'cls-hooked';
 import { PycUser } from 'src/common/dto/context/pyc-user.dto';
@@ -13,6 +12,8 @@ import { CreatorVO } from 'src/entities/vo/creator.vo';
 import { LastModifierVO } from 'src/entities/vo/last-modifier.vo';
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from 'testcontainers';
 import { DataSource, EntityManager, EntityNotFoundError } from 'typeorm';
+import { ENTITY_NOT_FOUND } from '../../../../common/dto/error/error-code.dto';
+import { ServiceException } from '../../../../core/exception/service.exception';
 import { INoticeCommentService } from '../../interfaces/notice-comment-service.interface';
 import { NoticeCommentService } from '../notice-comment.service';
 
@@ -98,7 +99,7 @@ describe('NoticeComment Service', () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.comment(pycUser, noticeId, comment);
       }),
-    ).rejects.toThrowError(new NotFoundException('공지사항을 찾을 수 없습니다.'));
+    ).rejects.toThrowError(new ServiceException(ENTITY_NOT_FOUND, '공지사항을 찾을 수 없습니다.'));
   });
 
   it('Save', async () => {
@@ -192,9 +193,9 @@ describe('NoticeComment Service', () => {
     await expect(
       namespace.runPromise(async () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
-        await service.findById(id);
+        await service.findCommentById(id);
       }),
-    ).rejects.toThrowError(new NotFoundException('댓글을 찾을 수 없습니다.'));
+    ).rejects.toThrowError(new ServiceException(ENTITY_NOT_FOUND, '댓글을 찾을 수 없습니다.'));
   });
 
   it('findById', async () => {
@@ -205,7 +206,7 @@ describe('NoticeComment Service', () => {
     //when
     const selectedCommentA = await namespace.runAndReturn<Promise<NoticeComment>>(async () => {
       namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
-      return service.findById(commentA.id);
+      return service.findCommentById(commentA.id);
     });
 
     //then
@@ -228,7 +229,7 @@ describe('NoticeComment Service', () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.modify(pycUser, id, comment);
       }),
-    ).rejects.toThrowError(new NotFoundException('댓글을 찾을 수 없습니다.'));
+    ).rejects.toThrowError(new ServiceException(ENTITY_NOT_FOUND, '댓글을 찾을 수 없습니다.'));
   });
 
   it('modify', async () => {

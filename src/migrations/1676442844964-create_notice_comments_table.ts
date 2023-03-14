@@ -9,7 +9,7 @@ export class createNoticeCommentsTable1676442844964 implements MigrationInterfac
     // TABLE
     await queryRunner.query(`CREATE TABLE IF NOT EXISTS notice_comments (
         id                  BIGINT      NOT NULL    DEFAULT nextval('notice_comments_id_seq') PRIMARY KEY,
-        notice_id           BIGINT      NOT NULL    REFERENCES notices(id),
+        notice_id           BIGINT      NOT NULL    REFERENCES notices(id) ON DELETE CASCADE,
         content             VARCHAR     NOT NULL,
     
         -- creator

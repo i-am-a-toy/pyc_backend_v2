@@ -4,6 +4,8 @@ import { Transactional } from 'src/core/decorator/transactional.decorator';
 import { INoticeCommentRepository, NoticeCommentRepositoryKey } from 'src/entities/notice-comment/notice-comment-repository.interface';
 import { NoticeComment } from 'src/entities/notice-comment/notice-comment.entity';
 import { INoticeRepository, NoticeRepositoryKey } from 'src/entities/notice/notice-repository.interface';
+import { ENTITY_NOT_FOUND } from '../../../common/dto/error/error-code.dto';
+import { ServiceException } from '../../../core/exception/service.exception';
 import { INoticeCommentService } from '../interfaces/notice-comment-service.interface';
 
 @Injectable()
@@ -20,7 +22,7 @@ export class NoticeCommentService implements INoticeCommentService {
     const notice = await this.noticeRepository.findById(noticeId);
     if (!notice) {
       this.logger.warn(`Could not find notice with Id: ${noticeId}`);
-      throw new NotFoundException('공지사항을 찾을 수 없습니다.');
+      throw new ServiceException(ENTITY_NOT_FOUND, '공지사항을 찾을 수 없습니다.');
     }
 
     const { userId, name, role } = pycUser;
@@ -32,7 +34,7 @@ export class NoticeCommentService implements INoticeCommentService {
     return this.commentRepository.findAllByNoticeId(noticeId, offset, limit);
   }
 
-  async findById(id: number): Promise<NoticeComment> {
+  async findCommentById(id: number): Promise<NoticeComment> {
     const comment = await this.commentRepository.findById(id);
     if (!comment) {
       this.logger.warn(`Could not find comment with Id: ${id}`);
@@ -44,11 +46,7 @@ export class NoticeCommentService implements INoticeCommentService {
 
   @Transactional()
   async modify(pycUser: PycUser, id: number, comment: string): Promise<NoticeComment> {
-    const target = await this.commentRepository.findById(id);
-    if (!target) {
-      this.logger.warn(`Could not find comment with Id: ${id}`);
-      throw new NotFoundException('댓글을 찾을 수 없습니다.');
-    }
+    const target = await this.findById(id);
     const { userId, name, role } = pycUser;
 
     target.update(comment, userId, name, role);
@@ -59,5 +57,14 @@ export class NoticeCommentService implements INoticeCommentService {
   @Transactional()
   async deleteById(id: number): Promise<void> {
     await this.commentRepository.deleteById(id);
+  }
+
+  private async findById(id: number) {
+    const target = await this.commentRepository.findById(id);
+    if (!target) {
+      this.logger.warn(`Could not find comment with Id: ${id}`);
+      throw new ServiceException(ENTITY_NOT_FOUND, '댓글을 찾을 수 없습니다.');
+    }
+    return target;
   }
 }

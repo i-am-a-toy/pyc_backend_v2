@@ -1,4 +1,3 @@
-import { NotFoundException } from '@nestjs/common';
 import { compareSync, hashSync } from 'bcrypt';
 import { plainToInstance } from 'class-transformer';
 import { createNamespace, destroyNamespace, Namespace } from 'cls-hooked';
@@ -12,6 +11,8 @@ import { User } from 'src/entities/user/user.entity';
 import { UserRepository } from 'src/entities/user/user.repository';
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from 'testcontainers';
 import { DataSource, EntityManager } from 'typeorm';
+import { ENTITY_NOT_FOUND } from '../../../../common/dto/error/error-code.dto';
+import { ServiceException } from '../../../../core/exception/service.exception';
 import { IUserService } from '../../interfaces/user-service.interface';
 import { UserService } from '../user.service';
 
@@ -98,7 +99,7 @@ describe('UserService Test', () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.findById(id);
       }),
-    ).rejects.toThrowError(new NotFoundException('유저를 찾을 수 없습니다.'));
+    ).rejects.toThrowError(new ServiceException(ENTITY_NOT_FOUND, '유저를 찾을 수 없습니다.'));
   });
 
   it('findById - user가 존재하는 경우', async () => {
