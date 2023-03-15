@@ -1,13 +1,13 @@
 import { Transform } from 'class-transformer';
 import { IsNumber } from 'class-validator';
-import { numberTransfrom } from '../transform/number.transform';
+import { numberTransform } from '../transform/number.transform';
 
 export abstract class ListRequest {
   @IsNumber()
-  @Transform(numberTransfrom)
+  @Transform(numberTransform)
   readonly offset: number = 0;
 
   @IsNumber()
-  @Transform(numberTransfrom)
+  @Transform(numberTransform)
   readonly limit: number = 20;
 }

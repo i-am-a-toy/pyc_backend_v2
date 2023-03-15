@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { TransformFnParams } from 'class-transformer';
-import { numberTransfrom } from '../number.transform';
+import { numberTransform } from '../number.transform';
 
 describe('numberTransform Test', () => {
   it('Number가 아닌 값이 들어올 경우', () => {
@@ -12,7 +12,7 @@ describe('numberTransform Test', () => {
 
     //when
     //then
-    expect(() => numberTransfrom(transformFnParams)).toThrowError(new BadRequestException(`offset must be Number`));
+    expect(() => numberTransform(transformFnParams)).toThrowError(new BadRequestException(`offset must be Number`));
   });
 
   it('NumberString이 들어올 경우', () => {
@@ -23,7 +23,7 @@ describe('numberTransform Test', () => {
     } as TransformFnParams;
 
     //when
-    const result = numberTransfrom(transformFnParams);
+    const result = numberTransform(transformFnParams);
 
     //then
     expect(result).toBe(0);
