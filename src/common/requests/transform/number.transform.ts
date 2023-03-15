@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
 import { TransformFnParams } from 'class-transformer';
 
-export const numberTransfrom = (param: TransformFnParams): number => {
+export const numberTransform = (param: TransformFnParams): number => {
   const { key, value } = param;
 
   const numberValue = Number(value);
