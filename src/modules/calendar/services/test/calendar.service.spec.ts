@@ -1,9 +1,11 @@
 import { NotFoundException } from '@nestjs/common';
 import { createNamespace, destroyNamespace, Namespace } from 'cls-hooked';
 import { PycUser } from 'src/common/dto/context/pyc-user.dto';
+import { ENTITY_NOT_FOUND } from 'src/common/dto/error/error-code.dto';
 import { FromToDTO } from 'src/common/dto/from-to/from-to.dto';
 import { Role } from 'src/common/types/role/role.type';
 import { TransactionManager } from 'src/core/database/typeorm/transaction-manager';
+import { ServiceException } from 'src/core/exception/service.exception';
 import { PYC_ENTITY_MANAGER, PYC_NAMESPACE } from 'src/core/middleware/namespace.constant';
 import { Calendar } from 'src/entities/calendar/calendar.entity';
 import { CalendarRepository } from 'src/entities/calendar/calendar.repository';
@@ -15,6 +17,8 @@ import { ICalendarService } from '../../interfaces/calendar-service.interface';
 import { CalendarService } from '../calendar.service';
 
 describe('Calendar Service', () => {
+  jest.setTimeout(300_000);
+
   let container: StartedPostgreSqlContainer;
   let dataSource: DataSource;
   let service: ICalendarService;
@@ -31,7 +35,6 @@ describe('Calendar Service', () => {
       password: container.getPassword(),
       synchronize: true,
       entities: [Calendar],
-      logging: true,
     }).initialize();
 
     const txManager = new TransactionManager();
@@ -90,15 +93,15 @@ describe('Calendar Service', () => {
     expect(calendar.lastModifier).toStrictEqual(new LastModifierVO(1, 'userA', Role.LEADER));
   });
 
-  it('findCalendarsByMonth - 조회결과가 없을 때', async () => {
+  it('findCalendarsByRange - 조회결과가 없을 때', async () => {
     //given
-    const year = 2023;
-    const month = 2;
+    const start = new Date('2023-03-14');
+    const end = new Date('2023-03-15');
 
     //when
     const [calendars, count] = await namespace.runAndReturn<Promise<[Calendar[], number]>>(async () => {
       namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
-      return await service.findCalendarsByMonth(year, month);
+      return await service.findCalendarsByRange(start, end);
     });
 
     //then
@@ -106,10 +109,10 @@ describe('Calendar Service', () => {
     expect(count).toBe(0);
   });
 
-  it('findCalendarsByMonth - 일정의 Start, End가 요청 range 안에 포함될 때', async () => {
+  it('findCalendarsByRange - 일정의 Start, End가 요청 range 안에 포함될 때', async () => {
     //given
-    const year = 2023;
-    const month = 2;
+    const start = new Date('2023-02-01');
+    const end = new Date('2023-02-28');
 
     const creator: PycUser = { id: 'id', userId: 1, name: 'userA', role: Role.LEADER };
     await dataSource.manager.save(Calendar, [
@@ -120,7 +123,7 @@ describe('Calendar Service', () => {
     //when
     const [calendars, count] = await namespace.runAndReturn<Promise<[Calendar[], number]>>(async () => {
       namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
-      return await service.findCalendarsByMonth(year, month);
+      return await service.findCalendarsByRange(start, end);
     });
 
     //then
@@ -129,10 +132,10 @@ describe('Calendar Service', () => {
     expect(count).toBe(1);
   });
 
-  it('findCalendarsByMonth - 일정의 Start, End가 요청 range를 포함할 때', async () => {
+  it('findCalendarsByRange - 일정의 Start, End가 요청 range를 포함할 때', async () => {
     //given
-    const year = 2023;
-    const month = 2;
+    const start = new Date('2023-02-01');
+    const end = new Date('2023-02-28');
 
     const creator: PycUser = { id: 'id', userId: 1, name: 'userA', role: Role.LEADER };
     await dataSource.manager.save(Calendar, [
@@ -143,7 +146,7 @@ describe('Calendar Service', () => {
     //when
     const [calendars, count] = await namespace.runAndReturn<Promise<[Calendar[], number]>>(async () => {
       namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
-      return await service.findCalendarsByMonth(year, month);
+      return await service.findCalendarsByRange(start, end);
     });
 
     //then
@@ -152,10 +155,10 @@ describe('Calendar Service', () => {
     expect(count).toBe(1);
   });
 
-  it('findCalendarsByMonth - 일정의 start가 요청 Range 밖에 있고 end는 요청 Range 안에 있을 때', async () => {
+  it('findCalendarsByRange - 일정의 start가 요청 Range 밖에 있고 end는 요청 Range 안에 있을 때', async () => {
     //given
-    const year = 2023;
-    const month = 2;
+    const start = new Date('2023-02-01');
+    const end = new Date('2023-02-28');
 
     const creator: PycUser = { id: 'id', userId: 1, name: 'userA', role: Role.LEADER };
     await dataSource.manager.save(Calendar, [
@@ -166,7 +169,7 @@ describe('Calendar Service', () => {
     //when
     const [calendars, count] = await namespace.runAndReturn<Promise<[Calendar[], number]>>(async () => {
       namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
-      return await service.findCalendarsByMonth(year, month);
+      return await service.findCalendarsByRange(start, end);
     });
 
     //then
@@ -175,10 +178,10 @@ describe('Calendar Service', () => {
     expect(count).toBe(1);
   });
 
-  it('findCalendarsByMonth - 일정의 end가 요청 Range 밖에 있고 start는 요청 Range 안에 있을 때', async () => {
+  it('findCalendarsByRange - 일정의 end가 요청 Range 밖에 있고 start는 요청 Range 안에 있을 때', async () => {
     //given
-    const year = 2023;
-    const month = 2;
+    const start = new Date('2023-02-01');
+    const end = new Date('2023-02-28');
 
     const creator: PycUser = { id: 'id', userId: 1, name: 'userA', role: Role.LEADER };
     await dataSource.manager.save(Calendar, [
@@ -189,7 +192,7 @@ describe('Calendar Service', () => {
     //when
     const [calendars, count] = await namespace.runAndReturn<Promise<[Calendar[], number]>>(async () => {
       namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
-      return await service.findCalendarsByMonth(year, month);
+      return await service.findCalendarsByRange(start, end);
     });
 
     //then
@@ -198,10 +201,10 @@ describe('Calendar Service', () => {
     expect(count).toBe(1);
   });
 
-  it('findCalendarsByMonth - 4가지 경우의 수 포함 및 Order Test', async () => {
+  it('findCalendarsByRange - 4가지 경우의 수 포함 및 Order Test', async () => {
     //given
-    const year = 2023;
-    const month = 2;
+    const start = new Date('2023-02-01');
+    const end = new Date('2023-02-28');
 
     const creator: PycUser = { id: 'id', userId: 1, name: 'userA', role: Role.LEADER };
     await dataSource.manager.save(Calendar, [
@@ -214,7 +217,7 @@ describe('Calendar Service', () => {
     //when
     const [calendars, count] = await namespace.runAndReturn<Promise<[Calendar[], number]>>(async () => {
       namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
-      return await service.findCalendarsByMonth(year, month);
+      return await service.findCalendarsByRange(start, end);
     });
 
     //then
@@ -237,7 +240,7 @@ describe('Calendar Service', () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.findCalendarId(id);
       }),
-    ).rejects.toThrowError(new NotFoundException('일정을 찾을 수 없습니다.'));
+    ).rejects.toThrowError(new ServiceException(ENTITY_NOT_FOUND, '일정을 찾을 수 없습니다.'));
   });
 
   it('findCalendarId - success', async () => {
@@ -281,7 +284,7 @@ describe('Calendar Service', () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.modify(pycUser, id, range, title, content);
       }),
-    ).rejects.toThrowError(new NotFoundException('일정을 찾을 수 없습니다.'));
+    ).rejects.toThrowError(new ServiceException(ENTITY_NOT_FOUND, '일정을 찾을 수 없습니다.'));
   });
 
   it('modify - Success', async () => {
@@ -322,7 +325,7 @@ describe('Calendar Service', () => {
     //when
     //then
     await expect(
-      await namespace.runPromise(async () => {
+      namespace.runPromise(async () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.deleteById(id);
       }),

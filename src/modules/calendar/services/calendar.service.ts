@@ -1,7 +1,9 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PycUser } from 'src/common/dto/context/pyc-user.dto';
+import { ENTITY_NOT_FOUND } from 'src/common/dto/error/error-code.dto';
 import { FromToDTO } from 'src/common/dto/from-to/from-to.dto';
 import { Transactional } from 'src/core/decorator/transactional.decorator';
+import { ServiceException } from 'src/core/exception/service.exception';
 import { CalendarRepositoryKey, ICalendarRepository } from 'src/entities/calendar/calendar-repository.interface';
 import { Calendar } from 'src/entities/calendar/calendar.entity';
 import { ICalendarService } from '../interfaces/calendar-service.interface';
@@ -17,8 +19,12 @@ export class CalendarService implements ICalendarService {
     await this.repository.save(Calendar.of(range.start, range.end, range.isAllDay, title, content, userId, name, role));
   }
 
-  async findCalendarsByMonth(year: number, month: number, options?: { offset: number; limit: number }): Promise<[Calendar[], number]> {
-    return await this.repository.findAllByMonth(year, month, options);
+  async findCalendarsByRange(
+    start: Date,
+    end: Date,
+    options?: { offset: number; limit: number } | undefined,
+  ): Promise<[Calendar[], number]> {
+    return await this.repository.findAllByRange(start, end, options);
   }
 
   async findCalendarId(id: number): Promise<Calendar> {
@@ -42,7 +48,7 @@ export class CalendarService implements ICalendarService {
     const calendar = await this.repository.findById(id);
     if (!calendar) {
       this.logger.warn(`Could not find calendar with Id: ${id}`);
-      throw new NotFoundException('일정을 찾을 수 없습니다.');
+      throw new ServiceException(ENTITY_NOT_FOUND, '일정을 찾을 수 없습니다.');
     }
     return calendar;
   }

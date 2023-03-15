@@ -9,7 +9,7 @@ export interface ICalendarService {
   register(pycUser: PycUser, range: FromToDTO, title: string, content: string): Promise<void>;
 
   // R
-  findCalendarsByMonth(year: number, month: number, options?: { offset: number; limit: number }): Promise<[Calendar[], number]>;
+  findCalendarsByRange(start: Date, end: Date, options?: { offset: number; limit: number }): Promise<[Calendar[], number]>;
   findCalendarId(id: number): Promise<Calendar>;
 
   // U
