@@ -1,5 +1,5 @@
 import { IsDateString } from 'class-validator';
-import { ListRequest } from '../../common/list.request';
+import { ListRequest } from '../common/list.request';
 
 export class FindCalendarsByRange extends ListRequest {
   @IsDateString()

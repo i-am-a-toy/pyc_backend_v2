@@ -1,12 +1,13 @@
 import { Body, Controller, Get, Inject, Param, Post, Put, Query } from '@nestjs/common';
 import { PycUser } from 'src/common/dto/context/pyc-user.dto';
-import { CreateCalendarRequest } from 'src/common/requests/calendar/requests/create-calendar.request';
-import { FindCalendarByIdRequest } from 'src/common/requests/calendar/requests/find-calendar-by-id.request';
-import { FindCalendarsByMonthRequest } from 'src/common/requests/calendar/requests/find-calendars-by-month.request';
-import { FindCalendarsByRange } from 'src/common/requests/calendar/requests/find-calendars-by-range.request';
-import { UpdateCalendarRequest } from 'src/common/requests/calendar/requests/update-calendar.request';
-import { CalendarListResponse } from 'src/common/requests/calendar/responses/calendar-list-response';
-import { CalendarResponse } from 'src/common/requests/calendar/responses/calendar-response';
+import { CreateCalendarRequest } from 'src/common/requests/calendar/create-calendar.request';
+import { FindCalendarByIdRequest } from 'src/common/requests/calendar/find-calendar-by-id.request';
+import { FindCalendarsByMonthRequest } from 'src/common/requests/calendar/find-calendars-by-month.request';
+import { FindCalendarsByRange } from 'src/common/requests/calendar/find-calendars-by-range.request';
+import { UpdateCalendarRequest } from 'src/common/requests/calendar/update-calendar.request';
+import { CalendarDayEventListResponse } from 'src/common/responses/calendar/calendar-day-event-list.response';
+import { CalendarListResponse } from 'src/common/responses/calendar/calendar-list-response';
+import { CalendarResponse } from 'src/common/responses/calendar/calendar-response';
 import { getMonthLastDay } from 'src/common/utils/date';
 import { PycContext } from 'src/core/decorator/pyc-context.decorator';
 import { CalendarServiceKey, ICalendarService } from '../interfaces/calendar-service.interface';
@@ -23,10 +24,19 @@ export class CalendarController {
 
   @Get('/year/:year/month/:month')
   async findCalendarsByMonth(@Param() param: FindCalendarsByMonthRequest): Promise<CalendarListResponse> {
-    const { offset, limit } = param;
     const start = new Date(`${param.getYear()}-${param.getMonth()}-01`);
     const end = getMonthLastDay(start);
-    return await this.getCalendarsByRange(start, end, offset, limit);
+
+    return await this.getCalendarsByRange(start, end, param.offset, param.limit);
+  }
+
+  @Get('/year/:year/month/:month/events')
+  async findCalendarEventsByMonth(@Param() param: FindCalendarsByMonthRequest): Promise<CalendarDayEventListResponse> {
+    const start = new Date(`${param.getYear()}-${param.getMonth()}-01`);
+    const end = getMonthLastDay(start);
+
+    const dayEvents = await this.service.findCalendarDayEvents(start, end);
+    return new CalendarDayEventListResponse(dayEvents, dayEvents.length);
   }
 
   @Get('/:id')

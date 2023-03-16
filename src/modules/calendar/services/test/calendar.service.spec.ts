@@ -1,5 +1,5 @@
-import { NotFoundException } from '@nestjs/common';
 import { createNamespace, destroyNamespace, Namespace } from 'cls-hooked';
+import { DayEventDTO } from 'src/common/dto/calendar/day-event.dto';
 import { PycUser } from 'src/common/dto/context/pyc-user.dto';
 import { ENTITY_NOT_FOUND } from 'src/common/dto/error/error-code.dto';
 import { FromToDTO } from 'src/common/dto/from-to/from-to.dto';
@@ -264,6 +264,50 @@ describe('Calendar Service', () => {
     expect(calendar.range.isAllDay).toBe(true);
     expect(calendar.creator).toStrictEqual(new CreatorVO(1, 'userA', Role.LEADER));
     expect(calendar.lastModifier).toStrictEqual(new LastModifierVO(1, 'userA', Role.LEADER));
+  });
+
+  it('findCalendarDayEvents - 조회 결과가 없는 경우', async () => {
+    //given
+    const start = new Date('2023-03-01');
+    const end = new Date('2023-03-31');
+
+    //when
+    const dayEvents = await namespace.runAndReturn<Promise<DayEventDTO[]>>(async () => {
+      namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+      return service.findCalendarDayEvents(start, end);
+    });
+
+    //then
+    dayEvents.forEach((e) => {
+      expect(e.isExist).toBe(false);
+    });
+  });
+
+  it('findCalendarDayEvents - 조회 결과가 있는 경우', async () => {
+    //given
+    const start = new Date('2023-03-01');
+    const end = new Date('2023-03-31');
+
+    const creator: PycUser = { id: 'id', userId: 1, name: 'userA', role: Role.LEADER };
+    await dataSource.manager.save(Calendar, [
+      Calendar.of(new Date('2023-03-30'), new Date('2023-03-31'), true, 'titleA', 'contentA', creator.userId, creator.name, creator.role),
+    ]);
+
+    //when
+    const dayEvents = await namespace.runAndReturn<Promise<DayEventDTO[]>>(async () => {
+      namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
+      return service.findCalendarDayEvents(start, end);
+    });
+
+    //then
+    const existDayTime: number[] = [new Date('2023-03-30').getTime(), new Date('2023-03-31').getTime()];
+    for (const dto of dayEvents) {
+      if (existDayTime.includes(dto.day.getTime())) {
+        expect(dto.isExist).toBe(true);
+        continue;
+      }
+      expect(dto.isExist).toBe(false);
+    }
   });
 
   it('modify - 일정이 존재하지 않을 때', () => {

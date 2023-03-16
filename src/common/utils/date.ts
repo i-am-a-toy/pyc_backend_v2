@@ -32,6 +32,23 @@ export const getMonthString = (month: number): string => {
   }
 };
 
+/**
+ * getDateString
+ *
+ * @description JsDate를 parsing하여 Date를 String으로 반환하는 method
+ * @param date {@link date} JsDate가 들어오게 된다.
+ * @returns 1 ~ 9는 0n, 10 ~ x는 그대로 return
+ */
+export const getDateString = (date: number): string => {
+  if (date === 0) {
+    return '01';
+  } else if (10 > date) {
+    return `0${date}`;
+  } else {
+    return `${date}`;
+  }
+};
+
 export const getYearString = (date: Date): string => {
   return date.getFullYear().toString();
 };
