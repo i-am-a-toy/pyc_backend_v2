@@ -1,5 +1,6 @@
 import {
   addWeek,
+  getDateString,
   getMonthFirstDay,
   getMonthLastDay,
   getMonthString,
@@ -70,6 +71,23 @@ describe('Custom Date Function', () => {
 
     //then
     expect(result).toBe('11');
+  });
+
+  test.each([
+    [new Date('2023-03-03'), '03'],
+    [new Date('2023-03-16'), '16'],
+  ])('getDateString Each Test areAnagrams(%s) returns %s', (date, expected) => {
+    const result = getDateString(date.getDate());
+    expect(result).toBe(expected);
+  });
+
+  it('getDateString Test', () => {
+    //given
+    const date = new Date('2023-03-03');
+
+    //when
+
+    //then
   });
 
   it('getMonthFirstDay Test', () => {
