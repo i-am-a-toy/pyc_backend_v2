@@ -1,7 +1,9 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { DayEventDTO } from 'src/common/dto/calendar/day-event.dto';
 import { PycUser } from 'src/common/dto/context/pyc-user.dto';
 import { ENTITY_NOT_FOUND } from 'src/common/dto/error/error-code.dto';
 import { FromToDTO } from 'src/common/dto/from-to/from-to.dto';
+import { getDateString, getMonthString } from 'src/common/utils/date';
 import { Transactional } from 'src/core/decorator/transactional.decorator';
 import { ServiceException } from 'src/core/exception/service.exception';
 import { CalendarRepositoryKey, ICalendarRepository } from 'src/entities/calendar/calendar-repository.interface';
@@ -29,6 +31,21 @@ export class CalendarService implements ICalendarService {
 
   async findCalendarId(id: number): Promise<Calendar> {
     return await this.findById(id);
+  }
+
+  async findCalendarDayEvents(start: Date, end: Date): Promise<DayEventDTO[]> {
+    const [calendars] = await this.repository.findAllByRange(start, end);
+
+    const dateMap: Map<Date, boolean> = new Map();
+    for (let i = start.getDate(); i <= end.getDate(); i++) {
+      const date = new Date(`${start.getFullYear()}-${getMonthString(start.getMonth())}-${getDateString(i)}`);
+      dateMap.set(date, !!calendars.find((c) => c.range.start <= date && c.range.end >= date));
+    }
+
+    return Array.from(dateMap).map((e) => {
+      const [date, isExist] = e;
+      return new DayEventDTO(date, isExist);
+    });
   }
 
   @Transactional()
