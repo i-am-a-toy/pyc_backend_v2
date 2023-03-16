@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsNumber } from 'class-validator';
-import { ListRequest } from '../../common/list.request';
-import { numberTransform } from '../../transform/number.transform';
+import { ListRequest } from '../common/list.request';
+import { numberTransform } from '../transform/number.transform';
 
 export class FindCalendarsByMonthRequest extends ListRequest {
   @IsNumber()

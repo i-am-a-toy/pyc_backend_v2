@@ -18,7 +18,7 @@ export class CalendarResponse {
     this.isAllDay = calendar.range.isAllDay;
     this.title = calendar.title;
     this.content = calendar.content;
-    this.creator = new CreatorDTO(calendar.creator.id, calendar.creator.role.enumName, calendar.creator.name);
+    this.creator = new CreatorDTO(calendar.creator.id, calendar.creator.name, calendar.creator.role.enumName);
     this.createdAt = calendar.createdAt;
     this.lastModifier = new LastModifierDTO(calendar.lastModifier.id, calendar.lastModifier.name, calendar.lastModifier.role.name);
     this.lastModifiedAt = calendar.lastModifiedAt;
