@@ -1,8 +1,13 @@
-import { ENTITY_NOT_FOUND, ErrorCode } from '../../common/dto/error/error-code.dto';
+import { ENTITY_NOT_FOUND, ErrorCode, INVALID_REQUEST_BODY } from '../../common/dto/error/error-code.dto';
 
 // ENTITY NOT FOUND SERVICE EXCEPTION
 export const EntityNotFoundException = (message?: string): ServiceException => {
   return new ServiceException(ENTITY_NOT_FOUND, message);
+};
+
+// INVALID REQUEST BODY SERVICE EXCEPTION
+export const InvalidRequestBodyException = (message?: string): ServiceException => {
+  return new ServiceException(INVALID_REQUEST_BODY, message);
 };
 
 interface HttpExceptionResponse {
