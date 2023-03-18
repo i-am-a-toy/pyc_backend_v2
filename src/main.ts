@@ -9,7 +9,7 @@ async function bootstrap() {
   // for class Transform & validation
   const exceptionFactory = new ClassValidatorExceptionFactory();
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-  app.useGlobalPipes(new ValidationPipe({ transform: true, exceptionFactory: exceptionFactory.handle() }));
+  app.useGlobalPipes(new ValidationPipe({ transform: true, exceptionFactory: exceptionFactory.throw() }));
 
   //for graceful ShutDown
   app.enableShutdownHooks();

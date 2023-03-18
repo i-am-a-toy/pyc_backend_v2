@@ -11,7 +11,7 @@ describe('ClassValidatorExceptionFactory Test', () => {
 
     //when
     //then
-    expect(() => factory.handle()(errors)).not.toThrowError();
+    expect(() => factory.throw()(errors)).not.toThrowError();
   });
 
   it('인자로 넘어온 Errors가 존재하는 경우', () => {
@@ -27,7 +27,7 @@ describe('ClassValidatorExceptionFactory Test', () => {
 
     //when
     //then
-    expect(() => factory.handle()(errors)).toThrowError(
+    expect(() => factory.throw()(errors)).toThrowError(
       InvalidRequestBodyException('유효하지 않은 데이터입니다. 확인 후 다시 요청해주세요.'),
     );
   });
