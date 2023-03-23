@@ -229,13 +229,13 @@ describe('Calendar Service', () => {
     expect(count).toBe(4);
   });
 
-  it('findCalendarId - 존재하지 않는 경우', () => {
+  it('findCalendarId - 존재하지 않는 경우', async () => {
     //given
     const id = 1;
 
     //when
     //then
-    expect(
+    await expect(
       namespace.runPromise(async () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.findCalendarId(id);
@@ -310,7 +310,7 @@ describe('Calendar Service', () => {
     }
   });
 
-  it('modify - 일정이 존재하지 않을 때', () => {
+  it('modify - 일정이 존재하지 않을 때', async () => {
     //given
     const id = 1;
     const pycUser: PycUser = { id: 'id', userId: 1, name: 'userA', role: Role.LEADER };
@@ -323,7 +323,7 @@ describe('Calendar Service', () => {
 
     //when
     //then
-    expect(
+    await expect(
       namespace.runPromise(async () => {
         namespace.set<EntityManager>(PYC_ENTITY_MANAGER, dataSource.createEntityManager());
         await service.modify(pycUser, id, range, title, content);
