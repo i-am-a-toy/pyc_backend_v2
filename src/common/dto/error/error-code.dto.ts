@@ -7,3 +7,4 @@ export type ErrorCode = ErrorCodeDTO;
 
 export const ENTITY_NOT_FOUND = new ErrorCodeDTO(HttpStatus.NOT_FOUND, 'Entity Not Found');
 export const INVALID_REQUEST_BODY = new ErrorCodeDTO(HttpStatus.BAD_REQUEST, 'RequestBody is invalid');
+export const RESOURCE_NOT_ALLOWED = new ErrorCodeDTO(HttpStatus.BAD_REQUEST, 'Resource not allowed');
