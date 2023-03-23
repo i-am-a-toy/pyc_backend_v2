@@ -60,4 +60,11 @@ export class User extends BaseTimeEntity {
   updatePassword(password: string): void {
     this.password = password;
   }
+
+  appoint(role: Role) {
+    this.role = role;
+    if (role.enumName === Role.MEMBER.enumName) {
+      this.password = null;
+    }
+  }
 }

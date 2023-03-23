@@ -20,6 +20,10 @@ export class Role extends EnumType<Role>() {
     return this.code < Role.MEMBER.code;
   }
 
+  isToBeGroupLeader(): boolean {
+    return this.code <= Role.LEADER.code;
+  }
+
   isEqualOrAbove(role: Role): boolean {
     return this.code >= role.code;
   }
